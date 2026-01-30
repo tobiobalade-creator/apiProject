@@ -1,0 +1,111 @@
+create database onlinebsdb;
+
+use onlinebsdb;
+
+create table Authors(
+AuthorID int auto_increment primary key,
+AuthorName varchar(255),
+Nationality varchar(255))
+
+select * from authors;
+
+create table Books(
+BookID int auto_increment primary key,
+Title varchar (255),
+AuthorID int,
+Price decimal(10, 2),
+foreign key (AuthorID) references Authors(AuthorID));
+
+select * from Books;
+
+create table Customers(
+CustomerID int auto_increment primary key,
+CustomerName varchar(255),
+Email varchar(255));
+
+select * from customers;
+
+create table Orders(
+OrderID int auto_increment primary key,
+CustomerID int,
+OrderDate date,
+TotalAmount decimal (10,2),
+foreign key (CustomerID) references Customers(CustomerID));
+
+select * from Orders;
+
+insert into authors (AuthorName, Nationality) values ("Ayo Bamidele", "British"), ("Seun Ajayi", "Nigerian"), ("Tom Bright", "American");
+insert into books (Title,AuthorID, Price) values ("Inception", 1, 30), ("Good Morning HS", 2, 50), ("Awesome GOD", 3, 40);
+insert into customers (CustomerName, Email) values ("James Franco", "JF@sky.com"), ("Baba Hope", "hope4life@yahoo.com"), ("Suzy Winter", "swinter@aol.com");
+insert into orders (CustomerID, OrderDate, TotalAmount) values (1, "2026-01-28", 140.00), (2, "2026-01-28", 60.00),(3, "2026-01-28", 30.00);
+
+
+// Retrieve a list of all bokks in the bookstore
+select * from books;
+
+// Display the details of a specific book, including its author
+select BookID, Title, AuthorName, price 
+from books
+inner join Authors on Authors.AuthorID = Books.AuthorID
+where BookID = 2;
+
+//List all customers who have placed orders.
+select OrderID, CustomerName
+from orders
+inner join customers on customers.customerID = orders.customerID;
+
+//Show the total number of orders placed.
+select Count(OrderID) as TotalOrders
+from Orders;
+
+insert into authors (AuthorName, Nationality) values ("Matthew Hall", "Irish"), ("James Mack", "British");
+insert into books (Title,AuthorID, Price) values ("Leadership", 4, 20), ("Lord of the Rings", 5, 60); 
+insert into customers (CustomerName, Email) values ("Mike Bibby", "MB89@sky.com"), ("Cheryl Cole", "ccforever@aol.com");
+insert into orders (CustomerID, OrderDate, TotalAmount) values (4, "2026-01-28", 70.00), (5, "2026-01-28", 60.00);
+
+
+update customers set CustomerName = "Baba Agba" where CustomerID = 2;
+update books set Title = " Harry Potter" where BookID = 1;
+
+delete from books where BookID = 7;
+
+select * from books;
+select * from customers;
+select * from orders;
+
+Select sum(TotalAmount) as TotalRevenue
+from orders;
+
+alter table orders 
+add BookID int, 
+add foreign key (BookID) references Books(BookID);
+
+Update orders set BookID = 1 where OrderID = 1;
+Update orders set BookID = 2 where OrderID = 2;
+Update orders set BookID = 3 where OrderID = 3;
+Update orders set BookID = 4 where OrderID = 4;
+Update orders set BookID = 5 where OrderID = 5;
+
+// Best selling book
+select Title, count(OrderID) as TimesOrdered
+from books
+inner join orders on orders.BookID = books.BookID	
+Group by Title
+order by TimesOrdered desc;
+
+//customers who places most orders
+select customers.CustomerID, CustomerName, count(OrderID) as TotalOrders
+from customers
+inner join orders on customers.customerID = orders.customerID
+group by customers.customerID
+order by TotalOrders desc;
+
+//Applying 20% discount to Harry Potter Books
+update books set Price = price * 0.80 where title = "Leadership";
+
+alter table books
+add column Discount decimal (10,2);
+
+update books
+set discount = 10
+where Title = "Awesome GOD";
